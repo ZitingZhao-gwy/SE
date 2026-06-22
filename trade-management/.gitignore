@@ -1,0 +1,4 @@
+config.properties
+target/
+dependency-reduced-pom.xml
+*.log

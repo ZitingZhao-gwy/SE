@@ -1,0 +1,16 @@
+target/
+node_modules/
+dist/
+.run-logs/
+.idea/
+_downloads/
+kafka_2.13-3.6.1/
+redis/
+*.log
+*.jar
+*.zip
+*.tgz
+dump.rdb
+*.rdb
+Thumbs.db
+.DS_Store

@@ -1,0 +1,44 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /api/publish
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/stock_publish?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+# 外部子系统地址
+subsystems:
+  account:
+    base-url: http://localhost:8080
+    login-path: /api/external/fund/login
+    snapshot-path: /api/external/fund/snapshot
+  central-trade:
+    base-url: http://localhost:8082
+    stocks-path: /api/central-trading/stocks
+    snapshot-path: /api/central-trading/market/snapshot

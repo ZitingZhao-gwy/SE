@@ -1,0 +1,43 @@
+# Maven
+target/
+*.jar
+*.war
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Node / Frontend
+node_modules/
+dist/
+*.local
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Maven wrapper (using system Maven)
+apache-maven-*/
+
+# Temporary
+*.tmp
+*.bak
+jdk-17.0.12+7/
+mysql-*/
+redis-*

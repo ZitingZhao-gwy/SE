@@ -1,0 +1,483 @@
+:root {
+    --red: #c1121f;
+    --red-dark: #780000;
+    --black: #111111;
+    --ink: #2b2b2b;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --bg: #f7f7f8;
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+}
+
+.topbar {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 28px;
+    background: var(--black);
+    color: var(--white);
+    border-bottom: 4px solid var(--red);
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 4px;
+    color: #d1d5db;
+    font-size: 12px;
+}
+
+main {
+    padding: 24px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.login-shell {
+    min-height: calc(100vh - 140px);
+    display: grid;
+    place-items: center;
+}
+
+.login-card {
+    position: relative;
+    width: min(960px, 100%);
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 8px;
+    box-shadow: 0 16px 32px rgba(17, 17, 17, 0.08);
+    overflow: hidden;
+}
+
+.nav-back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 999px;
+    background: rgba(17, 17, 17, 0.28);
+    color: var(--white);
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+}
+
+.nav-back-button:hover {
+    background: rgba(17, 17, 17, 0.48);
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+.login-hero {
+    padding: 56px;
+    background: linear-gradient(160deg, #c1121f 0%, #ae0f1b 58%, #780000 100%);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.login-hero .eyebrow {
+    margin: 0 0 6px;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.login-hero h1 {
+    margin: 8px 0 16px;
+    color: var(--white);
+    font-size: clamp(34px, 4vw, 56px);
+    line-height: 1.05;
+}
+
+.login-hero p {
+    margin: 0;
+    max-width: 420px;
+    color: rgba(255, 255, 255, 0.84);
+    line-height: 1.8;
+}
+
+.login-panel {
+    padding: 56px 48px;
+    background: var(--white);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+button.tab {
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid var(--line);
+}
+
+button.tab.active {
+    background: var(--red);
+    color: var(--white);
+    border-color: var(--red);
+}
+
+h1, h2, h3 {
+    margin: 0 0 18px;
+    color: var(--black);
+}
+
+label {
+    display: block;
+    margin: 14px 0;
+    font-weight: 600;
+}
+
+input,
+select {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 14px;
+    background: var(--white);
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid rgba(193, 18, 31, 0.18);
+    border-color: var(--red);
+}
+
+button {
+    min-height: 38px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--red);
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--red-dark);
+}
+
+button.ghost {
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid var(--line);
+}
+
+button.ghost:hover {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+button.ghost.danger {
+    border-color: rgba(193, 18, 31, 0.3);
+    color: var(--red);
+}
+
+button.ghost.danger:hover {
+    border-color: var(--red);
+    background: #fff5f5;
+}
+
+.message {
+    min-height: 22px;
+    color: var(--red);
+}
+
+.message.muted {
+    color: var(--muted);
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+}
+
+.sidebar,
+.stock-detail,
+.review-section,
+.admin-section,
+.account-control-section,
+.blacklist-section {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.sidebar {
+    min-height: 680px;
+    padding: 16px;
+}
+
+.panel-title {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--black);
+    font-weight: 700;
+}
+
+.stock-card {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    border-radius: 6px;
+    background: var(--white);
+    cursor: pointer;
+}
+
+.stock-card.active {
+    background: #fff5f5;
+    border-color: var(--red);
+}
+
+.stock-name {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.stock-meta {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.content {
+    display: grid;
+    gap: 20px;
+}
+
+.stock-detail {
+    padding: 20px;
+    min-height: 360px;
+}
+
+.stock-detail.empty {
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+}
+
+.detail-head,
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status.trading {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.status.paused {
+    background: #fef2f2;
+    color: var(--red);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.limit-control {
+    display: flex;
+    gap: 8px;
+}
+
+.limit-control input {
+    width: 120px;
+    margin: 0;
+}
+
+.order-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #fafafa;
+    color: var(--black);
+}
+
+.review-section,
+.admin-section,
+.account-control-section,
+.blacklist-section {
+    padding: 20px;
+}
+
+.permission-row {
+    display: grid;
+    grid-template-columns: 80px 140px 140px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.permission-row input,
+.permission-row select {
+    margin: 0;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+}
+
+.admin-id {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.review-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.blacklist-form {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 16px;
+}
+
+.blacklist-form input {
+    margin: 0;
+}
+
+.account-control-form {
+    display: grid;
+    grid-template-columns: 140px 1fr 140px 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.account-control-form input,
+.account-control-form select {
+    margin: 0;
+}
+
+.admin-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-identity > span {
+    color: #d1d5db;
+    font-size: 12px;
+}
+
+.app-dialog {
+    width: min(420px, calc(100% - 24px));
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0;
+}
+
+.app-dialog form {
+    padding: 20px;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+    .login-card {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-back-button {
+        top: 16px;
+        right: 16px;
+    }
+
+    .login-hero {
+        min-height: 260px;
+    }
+
+    .dashboard,
+    .order-grid,
+    .blacklist-form,
+    .account-control-form,
+    .permission-row {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        min-height: auto;
+    }
+
+    .topbar {
+        align-items: flex-start;
+    }
+
+    .admin-identity {
+        justify-content: flex-start;
+    }
+}

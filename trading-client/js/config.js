@@ -1,0 +1,42 @@
+const STORAGE_KEY = "stock-trading-client-state";
+const SESSION_LIMIT_MS = 30 * 60 * 1000;
+const storedCentralKafkaEnabled = localStorage.getItem("centralKafkaEnabled");
+
+const API_CONFIG = {
+  accountBaseUrl: localStorage.getItem("accountApiBase") || localStorage.getItem("fundAccountApiBase") || "http://localhost:8090",
+  clientBaseUrl: localStorage.getItem("clientApiBase") || "http://localhost:8090",
+  managementBaseUrl: localStorage.getItem("managementApiBase") || "http://localhost:8090",
+  centralBaseUrl: localStorage.getItem("centralTradingApiBase") || "http://localhost:8090",
+  centralKafkaEnabled: storedCentralKafkaEnabled === null ? true : storedCentralKafkaEnabled === "true",
+  endpoints: {
+    login: "/api/external/fund/login",
+    completeCertificate: "/api/external/fund/complete-certificate",
+    fundAccount: "/api/external/fund/snapshot",
+    holdings: "/api/external/security/snapshot",
+    changePassword: "/api/external/fund/password",
+    freezeFunds: "/api/fund-accounts/{accountNo}/freeze",
+    releaseFunds: "/api/fund-accounts/{accountNo}/release",
+    freezeHolding: "/api/security-accounts/{accountNo}/holdings/freeze",
+    releaseHolding: "/api/security-accounts/{accountNo}/holdings/release",
+    reviewOrder: "/api/trade-management/orders/review",
+    quotes: "/api/central-trading/stocks",
+    submitOrder: "/api/central-trading/orders",
+    cancelOrder: "/api/central-trading/orders/{orderId}/cancel",
+    orderResult: "/api/central-trading/orders/{orderId}/result",
+    kafkaSubmitOrder: "/api/client/central/orders",
+    kafkaCancelOrder: "/api/client/central/orders/{orderId}/cancel",
+    kafkaOrderResult: "/api/client/central/orders/{orderId}/result",
+    kafkaStockQuery: "/api/client/central/stock-queries",
+    kafkaQuotes: "/api/client/central/stocks",
+    clientSessions: "/api/client/sessions",
+    clientSession: "/api/client/sessions/{sessionId}",
+    clientOrders: "/api/client/orders",
+    clientOrder: "/api/client/orders/{localOrderId}",
+    clientTrades: "/api/client/trades",
+    clientAlerts: "/api/client/alerts",
+    clientAlert: "/api/client/alerts/{alertId}",
+    clientNotifications: "/api/client/notifications",
+    clientNotification: "/api/client/notifications/{notificationId}",
+  },
+  timeoutMs: 10000,
+};
