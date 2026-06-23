@@ -450,6 +450,9 @@ th {
   gap: 14px;
 }
 
+.text-btn { align-self: flex-end; border: 0; padding: 0; background: transparent; color: var(--accent); font: inherit; cursor: pointer; }
+.forgot-password-section { display: flex; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid #ffc4c1; border-radius: 8px; background: #fff9f8; }
+
 .account-action-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -463,14 +466,47 @@ th {
   gap: 14px;
 }
 
+.profile-form { margin-bottom: 18px; }
+.profile-saved-card {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: #fff9f8;
+}
+.profile-saved-card > div:first-child { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+.profile-saved-card span, .profile-current-grid span { color: var(--muted); font-size: 13px; }
+.profile-current-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.profile-current-grid div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.profile-current-grid strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.profile-change-hint { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+.profile-change-hint.has-changes { color: var(--accent); font-weight: 700; }
+.profile-actions { display: flex; gap: 10px; align-items: center; }
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
 @media (max-width: 760px) {
   .account-action-grid { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-current-grid { grid-template-columns: 1fr; }
+  .profile-saved-card > div:first-child { flex-direction: column; gap: 4px; }
 }
 
 .market-result {
   display: grid;
   gap: 14px;
 }
+
+.market-list-header { margin-top: 22px; }
+.market-actions { display: flex; gap: 8px; }
+.market-actions button { padding: 7px 12px; }
+.selected-stock { margin: 0 0 18px; padding: 14px 16px; border: 1px solid #ffc4c1; border-left: 4px solid var(--accent); border-radius: 8px; background: #fff9f8; display: flex; flex-direction: column; gap: 6px; }
+.selected-stock span { color: var(--muted); font-size: 14px; }
 
 .market-notice {
   min-height: 120px;

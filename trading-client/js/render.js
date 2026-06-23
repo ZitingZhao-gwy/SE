@@ -12,9 +12,56 @@ function renderAll() {
   renderTrades();
   renderAlerts();
   renderNotifications();
+  renderProfile();
   dom.clockText.textContent = nowText();
   const account = currentAccount();
   dom.sessionAccount.textContent = account ? `${account.name} ${account.accountNo}` : "未登录";
+}
+
+function renderProfile() {
+  const account = currentAccount();
+  if (!account || !dom.profileForm) return;
+  const profile = account.profile || {};
+  dom.profileForm.name.value = profile.name || account.name || "";
+  dom.profileForm.idNumber.value = profile.id_number || "";
+  dom.profileForm.phone.value = profile.phone || "";
+  dom.profileForm.address.value = profile.address || "";
+  dom.profileForm.workUnit.value = profile.work_unit || "";
+  dom.profileForm.occupation.value = profile.occupation || "";
+  dom.profileForm.education.value = profile.education || "";
+  dom.profileForm.phone.placeholder = profile.phone ? "" : "当前未填写";
+  dom.profileForm.address.placeholder = profile.address ? "" : "当前未填写";
+  dom.profileForm.workUnit.placeholder = profile.work_unit ? "" : "当前未填写";
+  dom.profileForm.occupation.placeholder = profile.occupation ? "" : "当前未填写";
+  dom.profileForm.education.placeholder = profile.education ? "" : "当前未填写";
+  const profileFields = [
+    ["姓名", profile.name || account.name || "未填写"],
+    ["证件号码", profile.id_number || "未填写"],
+    ["电话号码", profile.phone || "未填写"],
+    ["地址", profile.address || "未填写"],
+    ["工作单位", profile.work_unit || "未填写"],
+    ["职业", profile.occupation || "未填写"],
+    ["学历", profile.education || "未填写"],
+  ];
+  dom.profileCurrent.innerHTML = profileFields.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join("");
+  dom.profileSyncStatus.textContent = "已从账户系统加载";
+  updateProfileChangeHint();
+}
+
+function updateProfileChangeHint() {
+  const account = currentAccount();
+  if (!account || !dom.profileForm) return;
+  const profile = account.profile || {};
+  const fields = [
+    ["电话号码", "phone", "phone"],
+    ["地址", "address", "address"],
+    ["工作单位", "work_unit", "workUnit"],
+    ["职业", "occupation", "occupation"],
+    ["学历", "education", "education"],
+  ];
+  const changed = fields.filter(([, apiKey, formKey]) => dom.profileForm[formKey].value.trim() !== (profile[apiKey] || ""));
+  dom.profileChangeHint.textContent = changed.length ? `待保存修改：${changed.map(([label]) => label).join("、")}` : "未修改任何信息";
+  dom.profileChangeHint.classList.toggle("has-changes", changed.length > 0);
 }
 
 function renderAccount() {
@@ -76,6 +123,33 @@ function renderMarket(stocks) {
     `;
     dom.marketResult.appendChild(card);
   });
+}
+
+function renderMarketList(stocks) {
+  const sortedStocks = [...stocks].sort((left, right) => left.stockCode.localeCompare(right.stockCode));
+  dom.marketSummary.textContent = `${sortedStocks.length} 只股票 · 每 5 秒自动刷新`;
+  if (!sortedStocks.length) {
+    dom.marketResult.innerHTML = `<div class="market-notice pending"><strong>暂无行情数据</strong><span>正在向中央交易系统请求全部股票行情...</span></div>`;
+    return;
+  }
+  dom.marketResult.innerHTML = `<div class="table-wrap"><table class="market-table"><thead><tr><th>代码</th><th>名称</th><th>最新价</th><th>涨跌幅</th><th>买一 / 卖一</th><th>涨停 / 跌停</th><th>状态</th><th>操作</th></tr></thead><tbody></tbody></table></div>`;
+  const rows = dom.marketResult.querySelector("tbody");
+  sortedStocks.forEach((stock) => {
+    const limits = getLimits(stock);
+    const changeRate = stock.prevClose ? ((stock.latest - stock.prevClose) / stock.prevClose) * 100 : 0;
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${stock.stockCode}</td><td>${stock.name}</td><td>${money(stock.latest)}</td><td class="${changeRate >= 0 ? "gain" : "loss"}">${changeRate.toFixed(2)}%</td><td>${price(stock.buyOne)} / ${price(stock.sellOne)}</td><td>${price(limits.upper)} / ${price(limits.lower)}</td><td>${stock.status}</td><td class="market-actions"><button class="secondary-btn" data-trade-stock="${stock.stockCode}" data-trade-side="buy">买入</button><button class="ghost-btn" data-trade-stock="${stock.stockCode}" data-trade-side="sell">卖出</button></td>`;
+    rows.appendChild(row);
+  });
+}
+
+function renderSelectedTradeStock(stockCode) {
+  const stock = state.stocks[stockCode];
+  if (!stock) return dom.selectedTradeStock.classList.add("hidden");
+  const limits = getLimits(stock);
+  const changeRate = stock.prevClose ? ((stock.latest - stock.prevClose) / stock.prevClose) * 100 : 0;
+  dom.selectedTradeStock.classList.remove("hidden");
+  dom.selectedTradeStock.innerHTML = `<strong>已选择：${stock.name}（${stock.stockCode}）</strong><span>最新价 ${money(stock.latest)} · 涨跌幅 <b class="${changeRate >= 0 ? "gain" : "loss"}">${changeRate.toFixed(2)}%</b> · 买一/卖一 ${price(stock.buyOne)} / ${price(stock.sellOne)} · 涨停/跌停 ${price(limits.upper)} / ${price(limits.lower)} · ${stock.status}</span>`;
 }
 
 function renderOrders() {

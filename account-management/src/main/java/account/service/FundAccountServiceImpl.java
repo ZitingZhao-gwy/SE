@@ -12,6 +12,8 @@ import account.dto.ClientChangeFundPasswordRequest;
 import account.dto.ClientDepositRequest;
 import account.dto.ClientLoginAuthResponse;
 import account.dto.ClientWithdrawRequest;
+import account.dto.ClientInvestorProfileUpdateRequest;
+import account.dto.ClientResetTradePasswordRequest;
 import account.dto.CloseFundAccountRequest;
 import account.dto.CompleteLoginCertificateRequest;
 import account.dto.CreateFundAccountRequest;
@@ -20,6 +22,7 @@ import account.dto.FundAccountCreatedResponse;
 import account.dto.FundAccountListItemResponse;
 import account.dto.FundBalanceChangeResponse;
 import account.dto.FundInfoResponse;
+import account.dto.InvestorInfoResponse;
 import account.dto.FundLogView;
 import account.dto.FundReissueResponse;
 import account.dto.FundSnapshotResponse;
@@ -570,6 +573,64 @@ public class FundAccountServiceImpl implements FundAccountService {
         delegate.setAmount(request.getAmount());
         delegate.setWithdrawPassword(request.getWithdrawPassword());
         return withdraw(delegate);
+    }
+
+    @Override
+    public InvestorInfoResponse getClientInvestorProfile(String fundAccNo, String authToken) {
+        clientAuthTokenService.requireFundAccess(authToken, fundAccNo);
+        return toInvestorInfoResponse(findInvestorByFundAccount(fundAccNo));
+    }
+
+    @Override
+    public InvestorInfoResponse updateClientInvestorProfile(ClientInvestorProfileUpdateRequest request) {
+        clientAuthTokenService.requireFundAccess(request.getAuthToken(), request.getFundAccNo());
+        return dao.transactionManager().execute(connection -> {
+            var current = findInvestorByFundAccount(request.getFundAccNo());
+            var updated = new DomainModels.Investor(
+                    current.investorId(), current.type(), current.name(), current.gender(), current.idType(), current.idNumber(),
+                    mergeClientProfileValue(request.getPhone(), current.phone()),
+                    mergeClientProfileValue(request.getAddress(), current.address()),
+                    mergeClientProfileValue(request.getWorkUnit(), current.workUnit()),
+                    mergeClientProfileValue(request.getOccupation(), current.occupation()),
+                    mergeClientProfileValue(request.getEducation(), current.education()),
+                    current.legalNumber(), current.businessLicense(), current.executorName(), current.executorIdNumber(),
+                    current.executorPhone(), current.executorAddress(), current.agentName(), current.agentIdNumber(), current.createdAt());
+            dao.investorDao().update(connection, updated);
+            return toInvestorInfoResponse(updated);
+        });
+    }
+
+    @Override
+    public void resetClientTradePassword(ClientResetTradePasswordRequest request) {
+        dao.transactionManager().execute(connection -> {
+            var account = dao.fundAccountDao().findByAccountNoForUpdate(connection, request.getFundAccNo())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.ERR_010, "Fund account not found"));
+            checkAccountNotFrozenOrClosed(account.status(), request.getFundAccNo());
+            verifyOwnership(account.secAccNo(), request.getIdNumber());
+            dao.fundAccountDao().updateTradePassword(connection, request.getFundAccNo(), PasswordUtil.hash(request.getNewPassword()));
+            return null;
+        });
+    }
+
+    private DomainModels.Investor findInvestorByFundAccount(String fundAccNo) {
+        var fundAccount = dao.fundAccountDao().findByAccountNo(fundAccNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ERR_010, "Fund account not found"));
+        var securityAccount = dao.securityAccountDao().findByAccountNo(fundAccount.secAccNo())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ERR_010, "Security account not found"));
+        return dao.investorDao().findById(securityAccount.investorId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ERR_010, "Investor not found"));
+    }
+
+    private InvestorInfoResponse toInvestorInfoResponse(DomainModels.Investor investor) {
+        return InvestorInfoResponse.builder()
+                .investorId(investor.investorId()).name(investor.name()).gender(investor.gender())
+                .idType(investor.idType()).idNumber(investor.idNumber()).phone(investor.phone())
+                .address(investor.address()).workUnit(investor.workUnit()).occupation(investor.occupation())
+                .education(investor.education()).build();
+    }
+
+    private String mergeClientProfileValue(String requestedValue, String currentValue) {
+        return requestedValue == null ? currentValue : requestedValue;
     }
 
     @Override

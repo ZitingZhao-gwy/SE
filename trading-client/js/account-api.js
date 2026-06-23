@@ -202,6 +202,26 @@ async function withdrawViaAccountSystem(accountNo, amount, withdrawPassword) {
   });
 }
 
+async function fetchClientProfile(accountNo) {
+  return requestJson(API_CONFIG.accountBaseUrl || "", API_CONFIG.endpoints.profile, {
+    params: { fund_acc_no: accountNo, auth_token: currentAccount()?.authToken },
+  });
+}
+
+async function updateClientProfile(accountNo, profile) {
+  return requestJson(API_CONFIG.accountBaseUrl || "", API_CONFIG.endpoints.profile, {
+    method: "PUT",
+    body: { fund_acc_no: accountNo, auth_token: currentAccount()?.authToken, ...profile },
+  });
+}
+
+async function resetTradePasswordViaAccountSystem(accountNo, idNumber, newPassword) {
+  return requestJson(API_CONFIG.accountBaseUrl || "", API_CONFIG.endpoints.resetTradePassword, {
+    method: "POST",
+    body: { fund_acc_no: accountNo, id_number: idNumber, new_password: newPassword },
+  });
+}
+
 // 当前版本冻结/释放已移交中央交易系统，保留空函数供 business.js 本地流程使用
 async function freezeFunds(accountNo, amount, orderRef) {
   return { ok: true };

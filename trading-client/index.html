@@ -36,6 +36,14 @@
               />
             </label>
             <button class="primary-btn" type="submit">登录</button>
+            <button id="forgotPasswordBtn" class="text-btn" type="button">忘记密码？</button>
+            <div id="forgotPasswordSection" class="hidden forgot-password-section">
+              <p class="hint">验证身份证号后可重设交易密码。</p>
+              <label><span>身份证号</span><input id="resetIdNumber" maxlength="32" placeholder="请输入开户时的身份证号" /></label>
+              <label><span>新交易密码</span><input id="resetNewPassword" type="password" maxlength="20" placeholder="请输入 6 位新密码" /></label>
+              <label><span>确认新交易密码</span><input id="resetConfirmPassword" type="password" maxlength="20" placeholder="请再次输入新密码" /></label>
+              <button id="resetPasswordSubmitBtn" class="secondary-btn" type="button">验证并重设密码</button>
+            </div>
             <div id="certificateSection" class="hidden">
               <label>
                 <span>安全证书认证码</span>
@@ -134,6 +142,25 @@
                 <p class="form-message"></p>
               </form>
             </div>
+            <form id="profileForm" class="panel profile-form">
+              <div class="panel-header"><h3>修改个人信息</h3><span>姓名与证件信息由账户系统保护，不可在客户端修改</span></div>
+              <div class="profile-saved-card">
+                <div><strong>当前账户系统已保存的信息</strong><span id="profileSyncStatus">正在读取...</span></div>
+                <div id="profileCurrent" class="profile-current-grid"></div>
+              </div>
+              <p id="profileChangeHint" class="profile-change-hint">未修改任何信息</p>
+              <div class="profile-grid">
+                <label><span>姓名</span><input name="name" readonly /></label>
+                <label><span>证件号码</span><input name="idNumber" readonly /></label>
+                <label><span>电话号码</span><input name="phone" maxlength="20" placeholder="请输入电话号码" /></label>
+                <label><span>地址</span><input name="address" maxlength="200" placeholder="请输入联系地址" /></label>
+                <label><span>工作单位</span><input name="workUnit" maxlength="100" placeholder="请输入工作单位" /></label>
+                <label><span>职业</span><input name="occupation" maxlength="50" placeholder="请输入职业" /></label>
+                <label><span>学历</span><input name="education" maxlength="50" placeholder="请输入学历" /></label>
+              </div>
+              <div class="profile-actions"><button class="primary-btn" type="submit">保存修改</button><button id="resetProfileBtn" class="secondary-btn" type="button">恢复为已保存内容</button></div>
+              <p class="form-message"></p>
+            </form>
             <div class="panel">
               <div class="panel-header">
                 <h3>证券持仓</h3>
@@ -172,11 +199,15 @@
                 />
                 <button class="primary-btn" type="submit">查询</button>
               </form>
+              <div class="panel-header market-list-header">
+                <h3>全部股票</h3><span id="marketSummary">正在加载实时行情...</span>
+              </div>
               <div id="marketResult" class="market-result"></div>
             </div>
           </section>
 
           <section id="trade" class="view">
+            <div id="selectedTradeStock" class="selected-stock hidden"></div>
             <div class="trade-grid">
               <form id="buyForm" class="panel trade-form">
                 <div class="panel-header">

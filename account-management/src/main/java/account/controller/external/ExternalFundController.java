@@ -6,6 +6,8 @@ import account.dto.ClientChangeFundPasswordRequest;
 import account.dto.ClientDepositRequest;
 import account.dto.ClientLoginAuthRequest;
 import account.dto.ClientWithdrawRequest;
+import account.dto.ClientInvestorProfileUpdateRequest;
+import account.dto.ClientResetTradePasswordRequest;
 import account.dto.CompleteLoginCertificateRequest;
 import account.service.api.FundAccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +56,24 @@ public class ExternalFundController {
             @RequestParam("auth_token") @NotBlank String authToken) {
         log.info("[getFundSnapshot] fund_acc_no={}", fundAccNo);
         return ResultPayloadMapper.flatten(objectMapper, fundAccountService.getFundSnapshot(fundAccNo, authToken), "查询成功");
+    }
+
+    @GetMapping("/profile")
+    public Result<Void> getClientProfile(
+            @RequestParam("fund_acc_no") @NotBlank String fundAccNo,
+            @RequestParam("auth_token") @NotBlank String authToken) {
+        return ResultPayloadMapper.flatten(objectMapper, fundAccountService.getClientInvestorProfile(fundAccNo, authToken), "profile loaded");
+    }
+
+    @PutMapping("/profile")
+    public Result<Void> updateClientProfile(@Valid @RequestBody ClientInvestorProfileUpdateRequest request) {
+        return ResultPayloadMapper.flatten(objectMapper, fundAccountService.updateClientInvestorProfile(request), "profile updated");
+    }
+
+    @PostMapping("/reset-trade-password")
+    public Result<Void> resetClientTradePassword(@Valid @RequestBody ClientResetTradePasswordRequest request) {
+        fundAccountService.resetClientTradePassword(request);
+        return Result.success("password reset succeeded");
     }
 
     @PostMapping("/deposit")

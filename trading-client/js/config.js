@@ -16,6 +16,8 @@ const API_CONFIG = {
     changePassword: "/api/external/fund/password",
     deposit: "/api/external/fund/deposit",
     withdraw: "/api/external/fund/withdraw",
+    profile: "/api/external/fund/profile",
+    resetTradePassword: "/api/external/fund/reset-trade-password",
     freezeFunds: "/api/fund-accounts/{accountNo}/freeze",
     releaseFunds: "/api/fund-accounts/{accountNo}/release",
     freezeHolding: "/api/security-accounts/{accountNo}/holdings/freeze",

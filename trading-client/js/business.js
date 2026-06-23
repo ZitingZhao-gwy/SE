@@ -259,6 +259,9 @@ function startClientBackgroundJobs() {
   backgroundTimers.notificationSync = setInterval(() => {
     refreshClientNotifications({ silent: true });
   }, NOTIFICATION_SYNC_INTERVAL_MS);
+  backgroundTimers.marketSync = setInterval(() => {
+    refreshMarketOverview({ silent: true });
+  }, CLIENT_SYNC_INTERVAL_MS);
   sharedPortalSyncTimer = setInterval(() => {
     const sharedSession = readSharedPortalSession();
     if (!sharedSession?.fundAccountNo && state.session) {
@@ -269,6 +272,30 @@ function startClientBackgroundJobs() {
   syncOpenOrders({ silent: true });
   refreshAlertMonitor({ silent: true });
   refreshClientNotifications({ silent: true });
+  refreshMarketOverview({ silent: true });
+}
+
+async function refreshMarketOverview({ silent = false } = {}) {
+  const result = await fetchQuotes();
+  if (!result.ok) {
+    if (!silent) toast(result.message || "行情刷新失败");
+    renderMarketList(Object.values(state.stocks));
+    return;
+  }
+  result.stocks.forEach((stock) => { state.stocks[stock.stockCode] = stock; });
+  saveState();
+  renderMarketList(Object.values(state.stocks));
+}
+
+function openTradeFromMarket(stockCode, side) {
+  const stock = state.stocks[stockCode];
+  if (!stock) return toast("未找到该股票的最新行情");
+  setView("trade");
+  const form = side === "buy" ? dom.buyForm : dom.sellForm;
+  form.stockCode.value = stock.stockCode;
+  form.price.value = price(side === "buy" ? (stock.buyOne || stock.latest) : (stock.sellOne || stock.latest));
+  renderSelectedTradeStock(stockCode);
+  form.quantity.focus();
 }
 
 function stopClientBackgroundJobs() {
@@ -329,6 +356,12 @@ async function refreshExternalData({ randomizeMockQuotes = false } = {}) {
     return handleInvalidClientAuth(holdingResult);
   }
   if (holdingResult.ok) account.holdings = holdingResult.holdings;
+
+  const profileResult = await fetchClientProfile(account.accountNo);
+  if (profileResult.ok) {
+    account.profile = profileResult.data;
+    account.name = profileResult.data.name || account.name;
+  }
 
   if (API_CONFIG.centralBaseUrl || (API_CONFIG.clientBaseUrl && API_CONFIG.centralKafkaEnabled)) {
     const quoteResult = await fetchQuotes();
@@ -852,6 +885,37 @@ async function withdrawFunds(form) {
   form.reset();
   updateDisplayedBalance(result, -amount);
   setMessage(message, "取款成功，余额已与账户系统同步", "ok");
+}
+
+async function saveClientProfile(form) {
+  if (!validateSession()) return;
+  const message = form.querySelector(".form-message");
+  const current = currentAccount().profile || {};
+  const submittedValues = {
+    phone: form.phone.value.trim(),
+    address: form.address.value.trim(),
+    work_unit: form.workUnit.value.trim(),
+    occupation: form.occupation.value.trim(),
+    education: form.education.value.trim(),
+  };
+  const profile = Object.fromEntries(
+    Object.entries(submittedValues).filter(([key, value]) => value !== (current[key] || "")),
+  );
+  if (!Object.keys(profile).length) return setMessage(message, "未检测到个人信息变更", "error");
+  const labels = { phone: "电话号码", address: "地址", work_unit: "工作单位", occupation: "职业", education: "学历" };
+  const changedLabels = Object.keys(profile).map((key) => labels[key]).join("、");
+  const result = await updateClientProfile(currentAccount().accountNo, profile);
+  if (!result.ok) return setMessage(message, result.message || "账户系统更新个人信息失败", "error");
+  currentAccount().profile = result.data;
+  currentAccount().name = result.data.name || currentAccount().name;
+  saveState();
+  renderAll();
+  setMessage(message, `已保存：${changedLabels}。上方“当前账户系统已保存的信息”已更新。`, "ok");
+}
+
+function restoreSavedProfile() {
+  renderProfile();
+  setMessage(dom.profileForm.querySelector(".form-message"), "已恢复为账户系统当前保存的信息", "ok");
 }
 
 async function deleteAlert(alertId) {

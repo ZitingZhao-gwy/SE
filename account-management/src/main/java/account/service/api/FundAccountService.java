@@ -7,6 +7,8 @@ import account.dto.ClientChangeFundPasswordRequest;
 import account.dto.ClientDepositRequest;
 import account.dto.ClientLoginAuthResponse;
 import account.dto.ClientWithdrawRequest;
+import account.dto.ClientInvestorProfileUpdateRequest;
+import account.dto.ClientResetTradePasswordRequest;
 import account.dto.CompleteLoginCertificateRequest;
 import account.dto.CloseFundAccountRequest;
 import account.dto.CreateFundAccountRequest;
@@ -15,6 +17,7 @@ import account.dto.FundAccountCreatedResponse;
 import account.dto.FundAccountListItemResponse;
 import account.dto.FundBalanceChangeResponse;
 import account.dto.FundInfoResponse;
+import account.dto.InvestorInfoResponse;
 import account.dto.FundLogView;
 import account.dto.FundSnapshotResponse;
 import account.dto.FundTradeUpdateResponse;
@@ -56,6 +59,12 @@ public interface FundAccountService {
     FundBalanceChangeResponse clientDeposit(ClientDepositRequest request);
 
     FundBalanceChangeResponse clientWithdraw(ClientWithdrawRequest request);
+
+    InvestorInfoResponse getClientInvestorProfile(String fundAccNo, String authToken);
+
+    InvestorInfoResponse updateClientInvestorProfile(ClientInvestorProfileUpdateRequest request);
+
+    void resetClientTradePassword(ClientResetTradePasswordRequest request);
 
     FundTradeUpdateResponse updateFundBalance(UpdateFundBalanceRequest request);
 

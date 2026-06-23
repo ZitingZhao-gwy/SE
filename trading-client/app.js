@@ -35,7 +35,41 @@ dom.certificateSubmitBtn.addEventListener("click", async () => {
 
 dom.logoutBtn.addEventListener("click", () => logout());
 
-dom.navItems.forEach((item) => item.addEventListener("click", () => setView(item.dataset.view)));
+dom.navItems.forEach((item) => item.addEventListener("click", () => {
+  setView(item.dataset.view);
+  if (item.dataset.view === "market") refreshMarketOverview();
+}));
+
+dom.marketResult.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-trade-stock]");
+  if (button) openTradeFromMarket(button.dataset.tradeStock, button.dataset.tradeSide);
+});
+
+dom.forgotPasswordBtn.addEventListener("click", () => {
+  dom.forgotPasswordSection.classList.toggle("hidden");
+  if (!dom.forgotPasswordSection.classList.contains("hidden")) {
+    dom.resetIdNumber.focus();
+  }
+});
+
+dom.resetPasswordSubmitBtn.addEventListener("click", async () => {
+  const accountNo = dom.accountNo.value.trim();
+  const idNumber = dom.resetIdNumber.value.trim();
+  const newPassword = dom.resetNewPassword.value.trim();
+  const confirmPassword = dom.resetConfirmPassword.value.trim();
+  if (!accountNo || !idNumber) return setMessage(dom.loginMessage, "请输入资金账户卡号和身份证号", "error");
+  if (!/^\d{6}$/.test(newPassword)) return setMessage(dom.loginMessage, "新交易密码必须为 6 位数字", "error");
+  if (newPassword !== confirmPassword) return setMessage(dom.loginMessage, "两次输入的新密码不一致", "error");
+  dom.resetPasswordSubmitBtn.disabled = true;
+  const result = await resetTradePasswordViaAccountSystem(accountNo, idNumber, newPassword);
+  dom.resetPasswordSubmitBtn.disabled = false;
+  if (!result.ok) return setMessage(dom.loginMessage, result.message || "身份证号验证失败，无法重设密码", "error");
+  dom.tradePassword.value = newPassword;
+  dom.resetNewPassword.value = "";
+  dom.resetConfirmPassword.value = "";
+  dom.forgotPasswordSection.classList.add("hidden");
+  setMessage(dom.loginMessage, "密码已重设，请使用新密码登录", "ok");
+});
 
 dom.refreshBtn.addEventListener("click", async () => {
   if (!validateSession()) return;
@@ -129,6 +163,17 @@ dom.withdrawForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   await withdrawFunds(dom.withdrawForm);
 });
+
+dom.profileForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await saveClientProfile(dom.profileForm);
+});
+
+["phone", "address", "workUnit", "occupation", "education"].forEach((field) => {
+  dom.profileForm[field].addEventListener("input", updateProfileChangeHint);
+});
+
+dom.resetProfileBtn.addEventListener("click", restoreSavedProfile);
 
 setInterval(() => {
   dom.clockText.textContent = nowText();
